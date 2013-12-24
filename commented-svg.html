@@ -1,0 +1,82 @@
+<!doctype html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="lib/d3.v3.min.js"></script>
+  <style>
+    body {
+      margin: 0px;
+    }
+  </style>
+</head>
+
+<body>
+
+<script>
+
+var body = d3.select('body'),
+    w = window.innerWidth,
+    h = window.innerHeight + 15,
+    /* start with the body, then make an SVG the full
+       screen width and height as reported by the browser
+       (innerWidth etc.) and add it to the body */
+    svg = body.append('svg')
+            .attr('height', h)
+            .attr('width', w);
+
+/*  Let's do 16 bars, 12 visible at a time
+    'colors' is a d3 function, input is a number
+    between 1-20, output is a color. 
+    You can make your own function to do this
+ */
+
+var colors = d3.scale.category20();
+
+var bars = svg.selectAll('rect')
+  // 'rect' is an svg rectangle, 'selectAll' is a d3 function that
+  // will either create one element per datum that you give it,
+  // or connect existing html elements that match the 'selector'
+  // to the data you give it with the following 'data' function:
+  .data(d3.range(1, 17))
+  // that means our dataset is the numbers between 1-16
+  .enter()
+  // go into that list of numbers and append one rectangle for each
+  .append('rect')
+  // attr is a d3 function that sets or gets an attribute of an html
+  // element, if you just say '.attr(y)', it returns the current value
+  // of y, if you say '.attr(y, 5)', it sets y to 5, here make it the
+  // full screen height:
+  .attr('height', h)
+  // make it one twelfth the screen width:
+  .attr('width', w/12)
+  // make its starting point the top of the screen:
+  .attr('y', 0) // like cartesian coords but with y = 0 at top of screen
+  // set its leftmost coordinate to its position in the array (i) times 
+  // the width of one rectangle:
+  .attr('x', function (d,i) { return i * w/12; })
+  // fill is the color:
+  .attr('fill', function (d,i) { return colors(i); })
+
+function updatePosition() {
+  bars.attr('x', function() {
+    // el will be the svg element to move, 'this' is a keyword
+    // that refers to an object context, see MDN for 'this' and 'bind'.
+    // It is not essential to master the details out of the gate, here
+    // 'this' is set to be the html element by the d3.js library
+    var el = d3.select(this);
+    // now we use attr to get the current x value
+    var currentX = el.attr('x');
+    // if it is off fully to the left of the screen, move it to the
+    // off the screen part of the right:
+    if (currentX < -w/12) return 15 * w/12 - 1;
+    // otherwise move it one pixel to the left:
+    else return el.attr('x') - 1;
+  })
+  window.requestAnimationFrame(updatePosition);
+}
+
+// This is a function provided by browsers so that you can run
+// functions in an X times per second kind of way, ie for animations:
+window.requestAnimationFrame(updatePosition)
+
+</script>
