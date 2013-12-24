@@ -70,7 +70,7 @@ function updatePosition() {
     // off the screen part of the right:
     if (currentX < -w/12) return 15 * w/12 - 1;
     // otherwise move it one pixel to the left:
-    else return el.attr('x') - 1;
+    else return currentX - 1;
   })
   window.requestAnimationFrame(updatePosition);
 }

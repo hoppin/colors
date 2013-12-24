@@ -38,7 +38,7 @@ function updatePosition() {
     var el = d3.select(this);
     var currentX = el.attr('x');
     if (currentX < -w/12) return 15 * w/12 - 1;
-    else return el.attr('x') - 1;
+    else return currentX - 1;
   })
   window.requestAnimationFrame(updatePosition);
 }
