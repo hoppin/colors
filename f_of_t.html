@@ -1,0 +1,52 @@
+<!doctype html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="lib/d3.v3.min.js"></script>
+  <style>
+    body {
+      margin: 0px;
+    }
+  </style>
+</head>
+
+<body>
+
+<script>
+
+var body = d3.select('body'),
+    w = window.innerWidth,
+    h = window.innerHeight + 15,
+    svg = body.append('svg')
+            .attr('height', h)
+            .attr('width', w);
+
+var colors = d3.scale.linear()
+      .domain([-15,0,15])
+      .range(["#ff0000", "#0000ff", "#ff0000"]);
+
+var bars = svg.selectAll('rect')
+  .data(d3.range(1, 31)) // numbers 1-30
+  .enter()
+  .append('rect')
+  .attr('height', h)
+  .attr('width', w/12 + 2) // add one pixel on each side
+  .attr('y', 0) 
+  .attr('x', function (d,i) { return i * w/12 - 1; }) // center the extra pixels from 2 lines back
+  .attr('fill', function (d,i) { return colors(i - 15)})
+
+function updatePosition() {
+  bars.attr('x', function() {
+    var el = d3.select(this);
+    var currentX = el.attr('x');
+    // 29 because if we've moved over exactly 1 to the left + 1 px, the the
+    // farthest right one is now in postition 29, move the leftmost one there:
+    if (currentX < -w/12) return 29 * w/12 - .5; // use .5 to go half speed
+    else return currentX - .5;
+  })
+  window.requestAnimationFrame(updatePosition);
+}
+
+window.requestAnimationFrame(updatePosition)
+
+</script>
